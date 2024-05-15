@@ -1,0 +1,42 @@
+{
+    "levels": {
+        "level": [0, 1, 2],
+        "Paths": ["paths2.png", "paths3.png"],
+        "letters": {
+            "0": [
+                { "key": "a", "value": [825, 220], "pos": "mid" },
+                { "key": "l", "value": [820, 435], "pos": "mid" },
+                { "key": "a", "value": [905, 350], "pos": "mid" },
+                { "key": "i", "value": [1062, 255], "pos": "mid" },
+                { "key": "e", "value": [1020, 500], "pos": "mid" },
+                { "key": "n", "value": [620, 210], "pos": "left" },
+                { "key": "c", "value": [620, 295], "pos": "left" },
+                { "key": "a", "value": [620, 380], "pos": "left" },
+                { "key": "f", "value": [620, 460], "pos": "left" },
+                { "key": "p", "value": [620, 550], "pos": "left" },
+                { "key": "p", "value": [1260, 230], "pos": "right" },
+                { "key": "l", "value": [1260, 305], "pos": "right" },
+                { "key": "t", "value": [1260, 385], "pos": "right" },
+                { "key": "n", "value": [1260, 475], "pos": "right" },
+                { "key": "t", "value": [1260, 555], "pos": "right" }
+            ],
+            "1":[
+                { "key": "u", "value": [825, 220], "pos": "mid" },
+                { "key": "e", "value": [820, 435], "pos": "mid" },
+                { "key": "o", "value": [905, 350], "pos": "mid" },
+                { "key": "u", "value": [1062, 255], "pos": "mid" },
+                { "key": "a", "value": [1020, 500], "pos": "mid" },
+                { "key": "h", "value": [620, 210], "pos": "left" },
+                { "key": "b", "value": [620, 295], "pos": "left" },
+                { "key": "n", "value": [620, 380], "pos": "left" },
+                { "key": "p", "value": [620, 460], "pos": "left" },
+                { "key": "t", "value": [620, 550], "pos": "left" },
+                { "key": "p", "value": [1260, 230], "pos": "right" },
+                { "key": "t", "value": [1260, 305], "pos": "right" },
+                { "key": "n", "value": [1260, 385], "pos": "right" },
+                { "key": "p", "value": [1260, 475], "pos": "right" },
+                { "key": "s", "value": [1260, 555], "pos": "right" }
+            ]
+        }
+    }
+}
