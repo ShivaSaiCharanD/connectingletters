@@ -1,68 +1,49 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Application, Assets, Sprite, Text } from "pixi.js";
 import data from "../levels.json";
+import "../Game2.css"; // Import the CSS file
 
 export default function Game2() {
   const appRef = useRef(null);
+  const [level, setLevel] = useState(0);
 
   useEffect(() => {
     const app = new Application();
-
     (async () => {
       await app.init({
         width: window.innerWidth - 10,
         height: window.innerHeight - 180,
         backgroundColor: "ffffff",
+        view: document.getElementById('board')
       });
       document.body.appendChild(app.canvas);
       appRef.current = app;
 
       const paths = await Assets.load("paths2.png");
+
       const path = new Sprite(paths);
-      const letters = data.levels.letters[0];
-    //   [
-    //     { key: "a", value: [825, 220], pos: "mid" },
-    //     { key: "l", value: [820, 435], pos: "mid" },
-    //     { key: "a", value: [905, 350], pos: "mid" },
-    //     { key: "i", value: [1062, 255], pos: "mid" },
-    //     { key: "e", value: [1020, 500], pos: "mid" },
-    //     { key: "n", value: [620, 210], pos: "left" },
-    //     { key: "c", value: [620, 295], pos: "left" },
-    //     { key: "a", value: [620, 380], pos: "left" },
-    //     { key: "f", value: [620, 460], pos: "left" },
-    //     { key: "p", value: [620, 550], pos: "left" },
-    //     { key: "p", value: [1260, 230], pos: "right" },
-    //     { key: "l", value: [1260, 305], pos: "right" },
-    //     { key: "t", value: [1260, 385], pos: "right" },
-    //     { key: "n", value: [1260, 475], pos: "right" },
-    //     { key: "t", value: [1260, 555], pos: "right" },
-    //   ];
-      const words = data.levels.words[0];
-    //   ["nap", "cat", "all", "fit", "pen"];
+      const letters = data.levels.letters[level];
+      const words = data.levels.words[level];
+
       letters.forEach((element) => {
-        const text = new Text({
-          text: element.key,
-        });
+        const text = new Text({ text: element.key, fill: "#000000", fontSize: 24 });
         text.x = element.value[0];
         text.y = element.value[1];
         text.interactive = true;
         text.on("pointerdown", () => Clicked(element.key, element.pos));
         app.stage.addChild(text);
       });
+
       app.stage.addChild(path);
       path.x = app.screen.width / 3;
       path.y = app.screen.height / 4;
 
-      const Invalid = new Text({
-        text: "Invalid",
-      });
+      const Invalid = new Text({ text: "Invalid", fill: "#000000", fontSize: 36 });
       Invalid.x = 100;
       Invalid.y = 100;
       Invalid.visible = false;
 
-      const Correct = new Text({
-        text: "Correct",
-      });
+      const Correct = new Text({ text: "Correct", fill: "#000000", fontSize: 36 });
       Correct.x = 100;
       Correct.y = 100;
       Correct.visible = false;
@@ -101,7 +82,6 @@ export default function Game2() {
           setTimeout(() => {
             Invalid.visible = false;
           }, 4000);
-          // PIXI.sound.play('Tryagain.mp3');
         }
       }
 
@@ -112,14 +92,26 @@ export default function Game2() {
           setTimeout(() => {
             Correct.visible = false;
           }, 4000);
-
         }
       }
     })();
-    return () => {
-    
-    };
-  }, []);
 
-  return <canvas />;
+    return () => {
+      if (appRef.current > 1) {
+        appRef.current.destroy(true, { children: true });
+        document.body.removeChild(appRef.current.view);
+      }
+    };
+  }, [level]);
+
+  return (
+    <div>
+      <div id="pixi-container">
+        <canvas id='board'></canvas>
+      </div>
+      <button type="button" onClick={() => setLevel(level + 1)}>
+        Next Level
+      </button>
+    </div>
+  );
 }
