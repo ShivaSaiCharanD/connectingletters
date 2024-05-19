@@ -9,6 +9,8 @@ export default function Game2() {
 
   useEffect(() => {
     const app = new Application();
+    const current = new Date();
+    const start = current.getTime(); 
     (async () => {
       await app.init({
         width: window.innerWidth - 10,
@@ -52,52 +54,63 @@ export default function Game2() {
       app.stage.addChild(Invalid);
 
       let word = "";
-      let clicks = [false, false, false];
+      let clicks = { left: false, mid: false, right: false };
+      let tries = 0;
 
       function Clicked(key, pos) {
-        if (word.length === 3) {
-          word = "";
-          clicks = [false, false, false];
-        }
-        if (pos === "mid" && !clicks[1]) {
-          word = word + key;
-          clicks[1] = true;
-          console.log(word);
-          validation(word);
-        } else if (pos === "left" && !clicks[0]) {
+        if (pos === "mid" && !clicks.mid) {
+          word += key;
+          clicks.mid = true;
+        } else if (pos === "left" && !clicks.left) {
           word = key + word;
-          clicks[0] = true;
-          console.log(word);
-          validation(word);
-        } else if (pos === "right" && !clicks[2]) {
-          word = word + key;
-          clicks[2] = true;
-          console.log(word);
-          validation(word);
+          clicks.left = true;
+        } else if (pos === "right" && !clicks.right) {
+          word += key;
+          clicks.right = true;
         } else {
-          word = "";
-          clicks = [false, false, false];
           console.log("Invalid click");
           Invalid.visible = true;
           setTimeout(() => {
             Invalid.visible = false;
           }, 4000);
+          return;
+        }
+
+        if (word.length === 3) {
+          validation(word);
+          word = "";
+          clicks = { left: false, mid: false, right: false };
         }
       }
 
       function validation(word) {
-        if (words.includes(word) && word.length === 3) {
+        if (words.includes(word)) {
           console.log("Correct");
           Correct.visible = true;
           setTimeout(() => {
             Correct.visible = false;
           }, 4000);
+        } else {
+          console.log("Invalid");
+          Invalid.visible = true;
+          setTimeout(() => {
+            Invalid.visible = false;
+          }, 4000);
+        }
+        
+        tries++;
+        if (tries === 3) {
+          console.log("Game Over");
+          const end = new Date().getTime();
+          console.log("Time taken: " + (end - start) / 1000 + " seconds");
+        } else {
+          console.log("Try again");
         }
       }
     })();
 
     return () => {
-      if (appRef.current > 1) {
+      if (appRef.current) {
         appRef.current.destroy(true, { children: true });
         document.body.removeChild(appRef.current.view);
       }
