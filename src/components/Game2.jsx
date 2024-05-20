@@ -11,7 +11,7 @@ export default function Game2() {
     const app = new Application();
     const current = new Date();
     const start = current.getTime(); 
-    (async () => {
+    (async  () => {
       await app.init({
         width: window.innerWidth - 10,
         height: window.innerHeight - 180,
@@ -97,7 +97,7 @@ export default function Game2() {
             Invalid.visible = false;
           }, 4000);
         }
-        
+
         tries++;
         if (tries === 3) {
           console.log("Game Over");
@@ -107,12 +107,13 @@ export default function Game2() {
           console.log("Try again");
         }
       }
+      window.tries = tries;
     })();
 
     return () => {
       if (appRef.current) {
         appRef.current.destroy(true, { children: true });
-        document.body.removeChild(appRef.current.view);
+        // document.body.removeChild(appRef.current.view);
       }
     };
   }, [level]);
@@ -125,6 +126,8 @@ export default function Game2() {
       <button type="button" onClick={() => setLevel(level + 1)}>
         Next Level
       </button>
+      <p>Level: {level}</p>
+      <p>Tries:{window.tries}</p>
     </div>
   );
 }
