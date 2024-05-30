@@ -6,7 +6,7 @@ import "../Game2.css"; // Import the CSS file
 export default function Game2() {
   const appRef = useRef(null);
   const [level, setLevel] = useState(0);
-
+  // const maxLevel = data.levels.level.length;
   useEffect(() => {
     const app = new Application();
     const current = new Date();
@@ -20,8 +20,7 @@ export default function Game2() {
       });
       document.body.appendChild(app.canvas);
       appRef.current = app;
-
-      const paths = await Assets.load("paths2.png");
+      const paths = await Assets.load(data.levels.Paths[level]);
 
       const path = new Sprite(paths);
       const letters = data.levels.letters[level];
@@ -32,7 +31,7 @@ export default function Game2() {
         text.x = element.value[0];
         text.y = element.value[1];
         text.interactive = true;
-        text.on("pointerdown", () => Clicked(element.key, element.pos));
+        text.on("pointerdown", () => Clicked(element.key, element.pos, element.id));
         app.stage.addChild(text);
       });
 
@@ -56,12 +55,17 @@ export default function Game2() {
       let word = "";
       let clicks = { left: false, mid: false, right: false };
       let tries = 0;
-
-      function Clicked(key, pos) {
+      let wid = 0;
+      let idSet = new Set();
+      function Clicked(key, pos,id) {
+        if (wid !== null && wid !== id) {
+          console.log("Invalid click: letters must have the same id");
+        }
         if (pos === "mid" && !clicks.mid) {
           word += key;
           clicks.mid = true;
         } else if (pos === "left" && !clicks.left) {
+          console.log(id)
           word = key + word;
           clicks.left = true;
         } else if (pos === "right" && !clicks.right) {
@@ -75,11 +79,12 @@ export default function Game2() {
           }, 4000);
           return;
         }
-
+        wid = id;
         if (word.length === 3) {
-          validation(word);
+          validation(word,wid);
           word = "";
           clicks = { left: false, mid: false, right: false };
+          wid = null;
         }
       }
 
@@ -90,6 +95,7 @@ export default function Game2() {
           setTimeout(() => {
             Correct.visible = false;
           }, 4000);
+          idSet.add(word, wid);
         } else {
           console.log("Invalid");
           Invalid.visible = true;
@@ -99,12 +105,13 @@ export default function Game2() {
         }
 
         tries++;
-        if (tries === 3) {
+        if (idSet.size === 5) {
           console.log("Game Over");
           const end = new Date().getTime();
           console.log("Time taken: " + (end - start) / 1000 + " seconds");
+          idSet.clear();
         } else {
-          console.log("Try again");
+          console.log("continue playing");
         }
       }
       window.tries = tries;
@@ -123,9 +130,11 @@ export default function Game2() {
       <div id="pixi-container">
         <canvas id='board'></canvas>
       </div>
-      <button type="button" onClick={() => setLevel(level + 1)}>
+    {level < 100 && (
+      <button type="button" onClick={() => setLevel(level+1)}>
         Next Level
       </button>
+      )}
       <p>Level: {level}</p>
       <p>Tries:{window.tries}</p>
     </div>
