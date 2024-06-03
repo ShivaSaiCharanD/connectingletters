@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Application, Assets, Sprite, Text } from "pixi.js";
+import { Application, Assets, Sprite, Text} from "pixi.js";
 import confetti from "canvas-confetti";
 import data from "../levels.json";
 import "../Game2.css"; // Import the CSS file
@@ -33,11 +33,9 @@ export default function Game2() {
         text.x = element.value[0];
         text.y = element.value[1];
         text.interactive = true;
-        // text.hitArea = new PIXI.Rectangle(0, 0, 100, 100);
-        text.on("pointerdown", () => Clicked(element.key, element.pos, element.id));
+        text.on("pointerdown", () => Clicked(element.key, element.pos, element.id,text));
         app.stage.addChild(text);
       });
-
       app.stage.addChild(path);
       path.x = app.screen.width / 3;
       path.y = app.screen.height / 4;
@@ -60,60 +58,57 @@ export default function Game2() {
       let tries = 0;
       let wid = 0;
       let idSet = new Set();
-      function Clicked(key, pos,id) {
+      function Clicked(key, pos, id, text) {
+        if(wid===0){
+          wid = id;
+        }
         if (wid !== null && wid !== id) {
           console.log("Invalid click: letters must have the same id");
+          word = "";
+          clicks = { left: false, mid: false, right: false };
+          wid = null;
+          return;
         }
         if (pos === "mid" && !clicks.mid) {
           word += key;
           clicks.mid = true;
-          const lett = new Audio("")
+          text.style.fill = "#ffbf00";
         } else if (pos === "left" && !clicks.left) {
-          console.log(id)
           word = key + word;
           clicks.left = true;
+          text.style.fill = "#ffbf00";
         } else if (pos === "right" && !clicks.right) {
           word += key;
           clicks.right = true;
+          text.style.fill = "#ffbf00";
         } else {
           console.log("Invalid click");
-          Invalid.visible = true;
-          setTimeout(() => {
-            Invalid.visible = false;
-          }, 4000);
+          showInvalidMessage();
           return;
         }
+
         wid = id;
+
         if (word.length === 3) {
-          validation(word,wid);
+          validateWord(word);
           word = "";
           clicks = { left: false, mid: false, right: false };
           wid = null;
         }
       }
 
-      function validation(word) {
+      function validateWord(word) {
         if (words.includes(word)) {
           console.log("Correct");
-          Correct.visible = true;
-          setTimeout(() => {
-            Correct.visible = false;
-          }, 2000);
-          idSet.add(word, wid);
-          setTries(tries + 1)
-          confetti({
-            particleCount:200,
-            spread:200
-          });
+          showCorrectMessage();
+          idSet.add(wid);
+          setTries(prevTries => prevTries + 1);
+          confetti({ particleCount: 200, spread: 200 });
         } else {
           console.log("Invalid");
-          Invalid.visible = true;
-          setTimeout(() => {
-            Invalid.visible = false;
-          }, 2000);
+          showInvalidMessage();
         }
 
-        tries++;
         if (idSet.size === 5) {
           console.log("Game Over");
           const end = new Date().getTime();
@@ -121,8 +116,18 @@ export default function Game2() {
           confetti();
           idSet.clear();
         } else {
-          console.log("continue playing");
+          console.log("Continue playing");
         }
+      }
+
+      function showCorrectMessage() {
+        Correct.visible = true;
+        setTimeout(() => { Correct.visible = false; }, 2000);
+      }
+
+      function showInvalidMessage() {
+        Invalid.visible = true;
+        setTimeout(() => { Invalid.visible = false; }, 2000);
       }
       window.tries = tries;
     })();
