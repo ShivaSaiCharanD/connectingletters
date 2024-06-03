@@ -1,11 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Application, Assets, Sprite, Text } from "pixi.js";
+import confetti from "canvas-confetti";
 import data from "../levels.json";
 import "../Game2.css"; // Import the CSS file
 
 export default function Game2() {
   const appRef = useRef(null);
   const [level, setLevel] = useState(0);
+  const [tries, setTries] = useState(0);
   // const maxLevel = data.levels.level.length;
   useEffect(() => {
     const app = new Application();
@@ -20,7 +22,7 @@ export default function Game2() {
       });
       document.body.appendChild(app.canvas);
       appRef.current = app;
-      const paths = await Assets.load(data.levels.Paths[level]);
+      const paths = await Assets.load(data.levels.Paths[0]);
 
       const path = new Sprite(paths);
       const letters = data.levels.letters[level];
@@ -31,6 +33,7 @@ export default function Game2() {
         text.x = element.value[0];
         text.y = element.value[1];
         text.interactive = true;
+        // text.hitArea = new PIXI.Rectangle(0, 0, 100, 100);
         text.on("pointerdown", () => Clicked(element.key, element.pos, element.id));
         app.stage.addChild(text);
       });
@@ -64,6 +67,7 @@ export default function Game2() {
         if (pos === "mid" && !clicks.mid) {
           word += key;
           clicks.mid = true;
+          const lett = new Audio("")
         } else if (pos === "left" && !clicks.left) {
           console.log(id)
           word = key + word;
@@ -94,14 +98,19 @@ export default function Game2() {
           Correct.visible = true;
           setTimeout(() => {
             Correct.visible = false;
-          }, 4000);
+          }, 2000);
           idSet.add(word, wid);
+          setTries(tries + 1)
+          confetti({
+            particleCount:200,
+            spread:200
+          });
         } else {
           console.log("Invalid");
           Invalid.visible = true;
           setTimeout(() => {
             Invalid.visible = false;
-          }, 4000);
+          }, 2000);
         }
 
         tries++;
@@ -109,6 +118,7 @@ export default function Game2() {
           console.log("Game Over");
           const end = new Date().getTime();
           console.log("Time taken: " + (end - start) / 1000 + " seconds");
+          confetti();
           idSet.clear();
         } else {
           console.log("continue playing");
@@ -120,7 +130,6 @@ export default function Game2() {
     return () => {
       if (appRef.current) {
         appRef.current.destroy(true, { children: true });
-        // document.body.removeChild(appRef.current.view);
       }
     };
   }, [level]);
@@ -132,11 +141,11 @@ export default function Game2() {
       </div>
     {level < 100 && (
       <button type="button" onClick={() => setLevel(level+1)}>
-        Next Level
+        Next Stage
       </button>
       )}
-      <p>Level: {level}</p>
-      <p>Tries:{window.tries}</p>
+      <p>Stage: {level+1}</p>
+      <p>Tries:{tries}</p>
     </div>
   );
 }
