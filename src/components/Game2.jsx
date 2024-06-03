@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Application, Assets, Sprite, Text} from "pixi.js";
+import { Application, Assets, Sprite, Text, Graphics} from "pixi.js";
 import confetti from "canvas-confetti";
 import data from "../levels.json";
 import "../Game2.css"; // Import the CSS file
@@ -12,8 +12,8 @@ export default function Game2() {
   useEffect(() => {
     const app = new Application();
     const current = new Date();
-    const start = current.getTime(); 
-    (async  () => {
+    const start = current.getTime();
+    (async () => {
       await app.init({
         width: window.innerWidth - 10,
         height: window.innerHeight - 180,
@@ -33,7 +33,13 @@ export default function Game2() {
         text.x = element.value[0];
         text.y = element.value[1];
         text.interactive = true;
-        text.on("pointerdown", () => Clicked(element.key, element.pos, element.id,text));
+        text.on("pointerdown", () => Clicked(element.key, element.pos, element.id, text));
+        const circle = new Graphics();
+        circle.x = text.x + text.width / 2;
+        circle.y = text.y + text.height / 2;
+        circle.stroke({color: 0x000000, width: 2});
+        circle.fill('#FFF');
+        app.stage.addChild(circle);
         app.stage.addChild(text);
       });
       app.stage.addChild(path);
@@ -59,7 +65,7 @@ export default function Game2() {
       let wid = 0;
       let idSet = new Set();
       function Clicked(key, pos, id, text) {
-        if(wid===0){
+        if (wid === 0) {
           wid = id;
         }
         if (wid !== null && wid !== id) {
@@ -144,12 +150,12 @@ export default function Game2() {
       <div id="pixi-container">
         <canvas id='board'></canvas>
       </div>
-    {level < 100 && (
-      <button type="button" onClick={() => setLevel(level+1)}>
-        Next Stage
-      </button>
+      {level < 100 && (
+        <button type="button" onClick={() => setLevel(level + 1)}>
+          Next Stage
+        </button>
       )}
-      <p>Stage: {level+1}</p>
+      <p>Stage: {level + 1}</p>
       <p>Tries:{tries}</p>
     </div>
   );
