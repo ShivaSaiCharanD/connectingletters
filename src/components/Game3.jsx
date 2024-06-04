@@ -10,6 +10,7 @@ import {
 import data1 from "../cordinates.json";
 import wordsArray from "../words.json";
 import confetti from "canvas-confetti";
+import Popover from 'bootstrap/js/dist/popover';
 
 export default function Game3() {
   const appRef = useRef(null);
@@ -18,6 +19,15 @@ export default function Game3() {
   const [show, setShow] = useState(1);
   const [counter, setCounter] = useState(0);
   const words = wordsArray[`session1`][`item${show}`];
+  useEffect(() => {
+    const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+    const popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+      return new Popover(popoverTriggerEl);
+    });
+    return () => {
+      popoverList.forEach(popover => popover.dispose());
+    };
+  }, []);
 
   const handleNext = () => {
     setTries(0);
@@ -95,7 +105,7 @@ export default function Game3() {
       // wrong_right.x = app.screen.width / 4;
       // wrong_right.y = 20;
       // app.stage.addChild(wrong_right);
-      const voice =(letter)=> {
+      const voice = (letter) => {
         var msg = new SpeechSynthesisUtterance(letter);
         window.speechSynthesis.speak(msg);
       }
@@ -160,12 +170,12 @@ export default function Game3() {
         circleRight.interactive = true;
 
         circleLeft.on("pointerdown", () => {
-          let val = handleclick(circleLeft);
+          handleclick(circleLeft);
           voice(leftLetter);
         });
         circleRight.on("pointerdown", () => {
-          let val = handleclick(circleRight);
-            voice(rightLetter);
+          handleclick(circleRight);
+          voice(rightLetter);
         });
 
         app.stage.addChild(circleLeft);
@@ -181,38 +191,38 @@ export default function Game3() {
             stack.pop()
             resetColor(Graphics)
             return false;
-          } 
+          }
           Graphics.tint = "#FFFF00";
         }
 
-        else if(Graphics.display!==stack[stack.length-2].display+1 || stack[stack.length-2].index!==Graphics.index){
-            while(stack.length!==0){
-              const elem = stack.pop();
-              resetColor(elem);
-              elem.tint = "#FF0000";
-              elem.interactive = false;
-            }
-        } 
+        else if (Graphics.display !== stack[stack.length - 2].display + 1 || stack[stack.length - 2].index !== Graphics.index) {
+          while (stack.length !== 0) {
+            const elem = stack.pop();
+            resetColor(elem);
+            elem.tint = "#FF0000";
+            elem.interactive = false;
+          }
+        }
         else if (stack.length === words[Graphics.index].length) {
-            confetti({
-              particleCount: 300,
-              spread: 90,
-              decay: 0.95,
-              scalar: 1.5,
-              ticks: 150,
-              origin: {
-                y: 0.9,
-              },
-            });
-            while(stack.length!==0){
-              const elem = stack.pop();
-              elem.interactive = false;
-              elem.tint = "#00FF00";
-            }
-            setCounter((counter) => counter + 1);
-            console.log(counter);
-            return true;
-          
+          confetti({
+            particleCount: 300,
+            spread: 90,
+            decay: 0.95,
+            scalar: 1.5,
+            ticks: 150,
+            origin: {
+              y: 0.9,
+            },
+          });
+          while (stack.length !== 0) {
+            const elem = stack.pop();
+            elem.interactive = false;
+            elem.tint = "#00FF00";
+          }
+          setCounter((counter) => counter + 1);
+          console.log(counter);
+          return true;
+
         } else {
           stack.pop();
           return false;
@@ -243,13 +253,14 @@ export default function Game3() {
         }}
       >
         <div className="d-flex justify-content-around w-100">
-          <b className="fs-4" style={{color:"green"}}>Correct {counter}</b>
+          <b className="fs-4" style={{ color: "green" }}>Correct {counter}</b>
           <b className="fs-4">Level {show}</b>
         </div>
         <div className="d-flex justify-content-around w-100">
-          <b className="fs-4" style={{color:"red"}}>Tries {tries}</b>
+          <b className="fs-4" style={{ color: "red" }}>Tries {tries}</b>
           <b className="fs-5">SET-A</b>
-        </div>
+          <button tabindex="0" class="btn btn-lg btn-danger" data-bs-toggle="popover" data-bs-trigger="focus" title="Instructions" data-bs-content="Click letters from left to right following the path">Instructions</button>       
+          </div>
         <canvas id="board"></canvas>
         <div>
           {counter === 5 && show !== 3 ? (
