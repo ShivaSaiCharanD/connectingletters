@@ -19,6 +19,7 @@ export default function Game3() {
   const [show, setShow] = useState(1);
   const [counter, setCounter] = useState(0);
   const words = wordsArray[`session1`][`item${show}`];
+  const instruction = new Audio("/instructions.wav");
   useEffect(() => {
     const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
     const popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
@@ -257,10 +258,20 @@ export default function Game3() {
           <b className="fs-4">Level {show}</b>
         </div>
         <div className="d-flex justify-content-around w-100">
+          <div className="d-flex justify-content-start">
           <b className="fs-4" style={{ color: "red" }}>Tries {tries}</b>
-          <b className="fs-5">SET-A</b>
-          <button tabindex="0" class="btn btn-lg btn-danger" data-bs-toggle="popover" data-bs-trigger="focus" title="Instructions" data-bs-content="Click letters from left to right following the path">Instructions</button>       
           </div>
+          <div className="d-flex justify-content-end">
+          <button tabindex="0" className="btn" data-bs-toggle="popover" data-bs-trigger="focus" title="Instructions" data-bs-content="Click letters from left to right following the path"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" width={35} height={35} strokeWidth={1.5} stroke="currentColor" className="size-6">
+            <path strokeLinecap="round" strokeLinejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
+          </svg></button>
+          <button className="btn"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" width={35} height={35} strokeWidth={1.5} stroke="currentColor" className="size-6" onClick={()=>instruction.play()}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19.114 5.636a9 9 0 0 1 0 12.728M16.463 8.288a5.25 5.25 0 0 1 0 7.424M6.75 8.25l4.72-4.72a.75.75 0 0 1 1.28.53v15.88a.75.75 0 0 1-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.009 9.009 0 0 1 2.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75Z" />
+          </svg>
+          </button>
+
+          </div>
+        </div>
         <canvas id="board"></canvas>
         <div>
           {counter === 5 && show !== 3 ? (
