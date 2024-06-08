@@ -14,12 +14,15 @@ import Popover from 'bootstrap/js/dist/popover';
 
 export default function Game3() {
   const appRef = useRef(null);
-  const [stack, setStack] = useState([]);
+  // const [stack, setStack] = useState([]);
+  const stack = [];
   const [tries, setTries] = useState(0);
   const [show, setShow] = useState(1);
   const [counter, setCounter] = useState(0);
   const words = wordsArray[`session1`][`item${show}`];
   const instruction = new Audio("/instructions.wav");
+  const current = new Date();
+  const start = current.getTime();
   useEffect(() => {
     const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
     const popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
@@ -39,6 +42,7 @@ export default function Game3() {
     (async () => {
       const app = new Application();
       appRef.current = app;
+      
 
       let screenSize = {};
       if (window.innerHeight < window.innerWidth) {
@@ -53,7 +57,7 @@ export default function Game3() {
         };
       }
       await app.init({
-        // background: "#000",
+        background: "#ffffff",
         resolution: window.devicePixelRatio || 1, // Use device pixel ratio for better quality
         autoDensity: true,
         antialias: true,
@@ -222,6 +226,11 @@ export default function Game3() {
           }
           setCounter((counter) => counter + 1);
           console.log(counter);
+          if(counter === 5){
+            const end = new Date.getTime();
+            const time = (end - start) / 1000;
+            console.log(time);
+          }
           return true;
 
         } else {
@@ -272,7 +281,7 @@ export default function Game3() {
 
           </div>
         </div>
-        <canvas id="board"></canvas>
+        <canvas id="board" className="rounded-5"></canvas>
         <div>
           {counter === 5 && show !== 3 ? (
             <button className="btn btn-dark m-2" onClick={handleNext}>
