@@ -12,6 +12,8 @@ import wordsArray from "../words.json";
 import confetti from "canvas-confetti";
 import Popover from 'bootstrap/js/dist/popover';
 
+const current = new Date();
+const start = current.getTime();
 export default function Game3() {
   const appRef = useRef(null);
   // const [stack, setStack] = useState([]);
@@ -19,10 +21,10 @@ export default function Game3() {
   const [tries, setTries] = useState(0);
   const [show, setShow] = useState(1);
   const [counter, setCounter] = useState(0);
+  const [totalTime, setTotalTime] = useState(0);
+  const [allLevelsCompleted, setAllLevelsCompleted] = useState(false);
   const words = wordsArray[`session1`][`item${show}`];
   const instruction = new Audio("/instructions.wav");
-  const current = new Date();
-  const start = current.getTime();
   useEffect(() => {
     const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
     const popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
@@ -37,6 +39,12 @@ export default function Game3() {
     setTries(0);
     setCounter(0);
     setShow((show) => show + 1);
+    if (show === 2 && counter === 5) {
+      const end = new Date().getTime();
+      const time = (end - start) / 1000;
+      setTotalTime(time);
+      setAllLevelsCompleted(true);
+    }
   };
   useEffect(() => {
     (async () => {
@@ -82,34 +90,9 @@ export default function Game3() {
       };
       sprite.x = Padding.x;
       sprite.y = Padding.y;
-      // sprite.x = app.screen.width / 2;
-      // sprite.y = app.screen.height / 2;
-      // sprite.anchor.set(0.5, 0.5);
+
       app.stage.addChild(sprite);
 
-      // const main_text = new Text({
-      //   text: "Connect the letters to form a word",
-      //   style: new TextStyle({
-      //     fill: "#FFF"
-      //   })
-      // });
-      // const wrong_right = new Text({
-      //   text: " ",
-
-      //   style: new TextStyle({
-      //     fontFamily: "Arial",
-      //     fontSize: 30,
-      //     fill: "#D2042D", // Text color: white
-      //     align: "center"
-      //   })
-      // });
-      // main_text.x = app.screen.width / 4;
-      // main_text.y = 50;
-      // // main_text.anchor = 0.5;
-      // app.stage.addChild(main_text);
-      // wrong_right.x = app.screen.width / 4;
-      // wrong_right.y = 20;
-      // app.stage.addChild(wrong_right);
       const voice = (letter) => {
         var msg = new SpeechSynthesisUtterance(letter);
         window.speechSynthesis.speak(msg);
@@ -195,6 +178,7 @@ export default function Game3() {
             Graphics.tint = "FF0000"
             stack.pop()
             resetColor(Graphics)
+            setTries((tries)=>tries+1);
             return false;
           }
           Graphics.tint = "#FFFF00";
@@ -206,6 +190,7 @@ export default function Game3() {
             resetColor(elem);
             elem.tint = "#FF0000";
             elem.interactive = false;
+            setTries((tries)=>tries+1);
           }
         }
         else if (stack.length === words[Graphics.index].length) {
@@ -226,11 +211,6 @@ export default function Game3() {
           }
           setCounter((counter) => counter + 1);
           console.log(counter);
-          if(counter === 5){
-            const end = new Date.getTime();
-            const time = (end - start) / 1000;
-            console.log(time);
-          }
           return true;
 
         } else {
@@ -262,6 +242,13 @@ export default function Game3() {
           height: "98vh",
         }}
       >
+        {allLevelsCompleted && counter===5 ? (
+          <div>
+            <h1>Game Completed</h1>
+            <h2>Total Time: {totalTime} seconds</h2>
+          </div>
+        ) :
+        <>
         <div className="d-flex justify-content-around w-100">
           <b className="fs-4" style={{ color: "green" }}>Correct {counter}</b>
           <b className="fs-4">Level {show}</b>
@@ -282,6 +269,7 @@ export default function Game3() {
           </div>
         </div>
         <canvas id="board" className="rounded-5"></canvas>
+
         <div>
           {counter === 5 && show !== 3 ? (
             <button className="btn btn-dark m-2" onClick={handleNext}>
@@ -290,6 +278,7 @@ export default function Game3() {
             </button>
           ) : null}
         </div>
+        </>}
       </div>
     </div>
   );
